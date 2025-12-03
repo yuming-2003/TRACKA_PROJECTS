@@ -1,0 +1,206 @@
+yuming@DESKTOP-TJEE79F:/mnt/c/Users/Yuming Tseng/Desktop/project_a1$ /usr/lib/linux-tools-6.8.0-88/perf stat ./bench_prefetch 256 64 5
+# array_mb=256 stride_bytes=64 repeats=5
+avg_time_s=0.012377 bytes_touched=33554432 bandwidth_GiBps=2.525
+
+ Performance counter stats for './bench_prefetch 256 64 5':
+
+            307.75 msec task-clock:u                     #    1.021 CPUs utilized
+                 0      context-switches:u               #    0.000 /sec
+                 0      cpu-migrations:u                 #    0.000 /sec
+             65594      page-faults:u                    #  213.139 K/sec
+         401545042      cycles:u                         #    1.305 GHz
+           4584738      stalled-cycles-frontend:u        #    1.14% frontend cycles idle
+         327353297      instructions:u                   #    0.82  insn per cycle
+                                                  #    0.01  stalled cycles per insn
+          54618671      branches:u                       #  177.476 M/sec
+             69900      branch-misses:u                  #    0.13% of all branches
+
+       0.301517769 seconds time elapsed
+
+       0.073027000 seconds user
+       0.235310000 seconds sys
+
+
+yuming@DESKTOP-TJEE79F:/mnt/c/Users/Yuming Tseng/Desktop/project_a1$ /usr/lib/linux-tools-6.8.0-88/perf stat \
+  -e cycles,instructions,cache-references,cache-misses,LLC-loads,LLC-load-misses \
+  ./bench_prefetch 256 4096 5
+# array_mb=256 stride_bytes=4096 repeats=5
+avg_time_s=0.000554 bytes_touched=524288 bandwidth_GiBps=0.882
+
+ Performance counter stats for './bench_prefetch 256 4096 5':
+
+         111725659      cycles:u
+         203490171      instructions:u                   #    1.82  insn per cycle
+           5337171      cache-references:u
+            365936      cache-misses:u                   #    6.86% of all cache refs
+   <not supported>      LLC-loads:u
+   <not supported>      LLC-load-misses:u
+
+       0.260228561 seconds time elapsed
+
+       0.024953000 seconds user
+       0.241221000 seconds sys
+
+
+yuming@DESKTOP-TJEE79F:/mnt/c/Users/Yuming Tseng/Desktop/project_a1$ perf stat ./bench_affinity_smt 4 5 0 0 1
+WARNING: perf not found for kernel 6.6.87.2-microsoft
+
+  You may need to install the following packages for this specific kernel:
+    linux-tools-6.6.87.2-microsoft-standard-WSL2
+    linux-cloud-tools-6.6.87.2-microsoft-standard-WSL2
+
+  You may also want to install one of the following packages to keep up to date:
+    linux-tools-standard-WSL2
+    linux-cloud-tools-standard-WSL2
+yuming@DESKTOP-TJEE79F:/mnt/c/Users/Yuming Tseng/Desktop/project_a1$ /usr/lib/linux-tools-6.8.0-88/perf stat \
+  ./bench_affinity_smt 4 5 0 0 1
+# num_threads=4 duration=5.00s affinity_mode=0 base_core=0 core_stride=1
+thread 0 core -1 iterations 856326096 iters/sec 171251602.40
+thread 1 core -1 iterations 850995656 iters/sec 170185599.16
+thread 2 core -1 iterations 851985276 iters/sec 170383507.43
+thread 3 core -1 iterations 849598424 iters/sec 169906174.98
+TOTAL iterations 3408905452 iters/sec 681726883.98
+
+ Performance counter stats for './bench_affinity_smt 4 5 0 0 1':
+
+          20740.12 msec task-clock:u                     #    4.145 CPUs utilized
+                 0      context-switches:u               #    0.000 /sec
+                 0      cpu-migrations:u                 #    0.000 /sec
+                66      page-faults:u                    #    3.182 /sec
+       93094754077      cycles:u                         #    4.489 GHz
+          72105223      stalled-cycles-frontend:u        #    0.08% frontend cycles idle
+       88652204004      instructions:u                   #    0.95  insn per cycle
+                                                  #    0.00  stalled cycles per insn
+       12786874047      branches:u                       #  616.528 M/sec
+            204148      branch-misses:u                  #    0.00% of all branches
+
+       5.003451637 seconds time elapsed
+
+      20.726488000 seconds user
+       0.000000000 seconds sys
+
+
+yuming@DESKTOP-TJEE79F:/mnt/c/Users/Yuming Tseng/Desktop/project_a1$ /usr/lib/linux-tools-6.8.0-88/perf stat \
+  ./bench_affinity_smt 4 5 1 0 1
+# num_threads=4 duration=5.00s affinity_mode=1 base_core=0 core_stride=1
+thread 0 core 0 iterations 849466420 iters/sec 169876662.62
+thread 1 core 1 iterations 851286740 iters/sec 170240691.00
+thread 2 core 2 iterations 849152180 iters/sec 169813820.77
+thread 3 core 3 iterations 851558992 iters/sec 170295136.08
+TOTAL iterations 3401464332 iters/sec 680226310.47
+
+ Performance counter stats for './bench_affinity_smt 4 5 1 0 1':
+
+          20825.57 msec task-clock:u                     #    4.162 CPUs utilized
+                 0      context-switches:u               #    0.000 /sec
+                 0      cpu-migrations:u                 #    0.000 /sec
+                67      page-faults:u                    #    3.217 /sec
+       93169449395      cycles:u                         #    4.474 GHz
+          72708165      stalled-cycles-frontend:u        #    0.08% frontend cycles idle
+       88458330077      instructions:u                   #    0.95  insn per cycle
+                                                  #    0.00  stalled cycles per insn
+       12758903553      branches:u                       #  612.656 M/sec
+            214924      branch-misses:u                  #    0.00% of all branches
+
+       5.004020670 seconds time elapsed
+
+      20.809481000 seconds user
+       0.016647000 seconds sys
+
+
+yuming@DESKTOP-TJEE79F:/mnt/c/Users/Yuming Tseng/Desktop/project_a1$ /usr/lib/linux-tools-6.8.0-88/perf stat \
+  ./bench_affinity_smt 2 5 1 0 0      # both threads pinned to the SAME core
+# num_threads=2 duration=5.00s affinity_mode=1 base_core=0 core_stride=0
+thread 0 core 0 iterations 462822916 iters/sec 92479490.55
+thread 1 core 0 iterations 463515952 iters/sec 92617970.33
+TOTAL iterations 926338868 iters/sec 185097460.87
+
+ Performance counter stats for './bench_affinity_smt 2 5 1 0 0':
+
+           5519.44 msec task-clock:u                     #    1.102 CPUs utilized
+                 0      context-switches:u               #    0.000 /sec
+                 0      cpu-migrations:u                 #    0.000 /sec
+                64      page-faults:u                    #   11.595 /sec
+       25045932144      cycles:u                         #    4.538 GHz
+          19903452      stalled-cycles-frontend:u        #    0.08% frontend cycles idle
+       24090493084      instructions:u                   #    0.96  insn per cycle
+                                                  #    0.00  stalled cycles per insn
+        3474732635      branches:u                       #  629.544 M/sec
+             59465      branch-misses:u                  #    0.00% of all branches
+
+       5.007795443 seconds time elapsed
+
+       5.519860000 seconds user
+       0.000000000 seconds sys
+
+
+yuming@DESKTOP-TJEE79F:/mnt/c/Users/Yuming Tseng/Desktop/project_a1$ /usr/lib/linux-tools-6.8.0-88/perf stat \
+  ./bench_affinity_smt 2 5 1 0 1      # threads pinned to DIFFERENT cores
+# num_threads=2 duration=5.00s affinity_mode=1 base_core=0 core_stride=1
+thread 0 core 0 iterations 877236592 iters/sec 175434924.48
+thread 1 core 1 iterations 878277272 iters/sec 175643045.78
+TOTAL iterations 1755513864 iters/sec 351077970.26
+
+ Performance counter stats for './bench_affinity_smt 2 5 1 0 1':
+
+          10391.28 msec task-clock:u                     #    2.077 CPUs utilized
+                 0      context-switches:u               #    0.000 /sec
+                 0      cpu-migrations:u                 #    0.000 /sec
+                63      page-faults:u                    #    6.063 /sec
+       47757323456      cycles:u                         #    4.596 GHz
+          25818961      stalled-cycles-frontend:u        #    0.05% frontend cycles idle
+       45653954179      instructions:u                   #    0.96  insn per cycle
+                                                  #    0.00  stalled cycles per insn
+        6584962094      branches:u                       #  633.701 M/sec
+             88335      branch-misses:u                  #    0.00% of all branches
+
+       5.003459822 seconds time elapsed
+
+      10.381379000 seconds user
+       0.004152000 seconds sys
+
+
+yuming@DESKTOP-TJEE79F:/mnt/c/Users/Yuming Tseng/Desktop/project_a1$ /usr/lib/linux-tools-6.8.0-88/perf stat ./bench_async_io ~/a1/bigfile.bin 1048576 0 1
+/usr/lib/linux-tools-6.8.0-88/perf stat ./bench_async_io ~/a1/bigfile.bin 1048576 1 4
+# file=/home/yuming/a1/bigfile.bin size=1073741824 block_size=1048576 mode=0 num_outstanding=1 total_blocks=1024
+elapsed_s=0.651513 throughput_MiBps=1571.73
+
+ Performance counter stats for './bench_async_io /home/yuming/a1/bigfile.bin 1048576 0 1':
+
+            678.00 msec task-clock:u                     #    1.036 CPUs utilized
+                 0      context-switches:u               #    0.000 /sec
+                 0      cpu-migrations:u                 #    0.000 /sec
+                59      page-faults:u                    #   87.021 /sec
+           2035063      cycles:u                         #    0.003 GHz
+           1639330      stalled-cycles-frontend:u        #   80.55% frontend cycles idle
+            163628      instructions:u                   #    0.08  insn per cycle
+                                                  #   10.02  stalled cycles per insn
+             38379      branches:u                       #   56.606 K/sec
+              6037      branch-misses:u                  #   15.73% of all branches
+
+       0.654469337 seconds time elapsed
+
+       0.000000000 seconds user
+       0.678559000 seconds sys
+
+
+# file=/home/yuming/a1/bigfile.bin size=1073741824 block_size=1048576 mode=1 num_outstanding=4 total_blocks=1024
+elapsed_s=0.299738 throughput_MiBps=3416.31
+
+ Performance counter stats for './bench_async_io /home/yuming/a1/bigfile.bin 1048576 1 4':
+
+            289.24 msec task-clock:u                     #    0.955 CPUs utilized
+                 0      context-switches:u               #    0.000 /sec
+                 0      cpu-migrations:u                 #    0.000 /sec
+                66      page-faults:u                    #  228.186 /sec
+           6001089      cycles:u                         #    0.021 GHz
+           4772257      stalled-cycles-frontend:u        #   79.52% frontend cycles idle
+           1206307      instructions:u                   #    0.20  insn per cycle
+                                                  #    3.96  stalled cycles per insn
+            275906      branches:u                       #  953.909 K/sec
+             39007      branch-misses:u                  #   14.14% of all branches
+
+       0.302729876 seconds time elapsed
+
+       0.004271000 seconds user
+       0.281892000 seconds sys
