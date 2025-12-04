@@ -2,7 +2,7 @@
 
 > **Author:** Yuming Tseng  
 > **Machine:** AMD Ryzen 7 5800X 8 core processor
-
+> **Code:** Source codes for all filters (XOR, Cuckoo, Quotient, Blocked Bloom) could be found in the amf_bench.cpp
 ---
 
 ## 1) Introduction
