@@ -366,3 +366,39 @@ Thread scaling clearly differentiates read-only vs dynamic filters:
 
 These results highlight the core trade-off:  
 **dynamic flexibility (Cuckoo/QF) versus high-throughput multicore scalability (Bloom/XOR).**
+
+## 4. Limitations and Anomalies
+
+Despite controlled experimental conditions, several limitations and expected anomalies appeared during evaluation:
+
+### XOR Filter Build Instability
+The XOR filter may fail to build on certain key sets due to its 3-hypergraph peeling requirement. The implementation retries construction, which increases preprocessing time and adds variability not visible in runtime results.
+
+### Cuckoo Eviction Spikes at High Load
+Above ~80% load factor, Cuckoo filters exhibit rapidly growing eviction chains, insertion slowdowns, and occasional failures near 95% load—consistent with cuckoo hashing theory. These spikes also inflate p95/p99 lookup latency.
+
+### Quotient Filter Cluster Expansion
+Quotient filters form long shifted clusters as occupancy rises. This increases probe and shift lengths, causing smooth but noticeable throughput degradation and larger tail latencies at ≥90% load.
+
+### Blocked Bloom FPR Deviations
+Blocked Bloom achieves slightly higher FPR than the target because blocking reduces effective bit density and increases intra-block collisions. This is a known trade-off between accuracy and cache locality.
+
+### WSL2-Induced Latency Noise
+Running inside WSL2 introduces mild virtualization noise, especially in p99 latency, due to host scheduling and page boundary interactions. Multiple trials and warmup phases mitigate but do not eliminate this.
+
+### Bandwidth Saturation at High Threads
+For 8-thread workloads, all filters show sublinear scaling due to memory bandwidth limits rather than algorithmic bottlenecks.
+
+These limitations are well understood in AMF literature and do not affect the validity of the comparative results.
+
+## Final Remark
+
+Each filter performs best in a different operational regime, and none dominates across all metrics. Bloom and XOR excel in static or read-heavy environments. Quotient and Cuckoo enable dynamic updates, but at the cost of higher memory usage and more complicated microarchitectural behavior.  
+The results align consistently with published AMF literature, and the comprehensive experimental methodology ensures that the comparisons are fair, reproducible, and representative of real-world system behavior.
+
+### Practical Guidelines
+
+- **Static datasets:** XOR filter is the preferred choice due to outstanding lookup speed and space efficiency.
+- **Space-constrained applications:** Blocked Bloom provides the best memory footprint.
+- **High-update-rate dynamic workloads:** Quotient filter offers excellent throughput and stable behavior.
+- **Moderate-update workloads with deletions:** Cuckoo filter is suitable only at conservative load factors (≤0.80).
